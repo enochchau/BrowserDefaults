@@ -47,16 +47,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         currentDefaultBrowser = NSWorkspace.shared.urlForApplication(toOpen: URL(string: "http://apple.com")!)
         let menu = NSMenu()
         
-        // Add a menu item to display the current default brXowser
-        let currentItem = NSMenuItem(
-            title: "Default Browser: \((currentDefaultBrowser != nil) ? formatBrowserName(browser: currentDefaultBrowser!) : "Unknown")",
-            action: nil,
-            keyEquivalent: ""
-        )
-        currentItem.isEnabled = false // Make it non-selectable
-        menu.addItem(currentItem)
-        menu.addItem(NSMenuItem.separator())
-
         if browserIdentifiers.isEmpty {
             let noBrowsersItem = NSMenuItem(title: "No Browsers Found", action: nil, keyEquivalent: "")
             noBrowsersItem.isEnabled = false
@@ -92,7 +82,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func changeDefaultBrowser(_ sender: NSMenuItem) {
         if let browserIdentifier = sender.representedObject as? URL {
             NSWorkspace.shared.setDefaultApplication(at: browserIdentifier, toOpenURLsWithScheme: "http"){error in
-                self.constructMenu()
+                if error == nil {
+                    self.constructMenu()
+                }
             }
         }
     }
