@@ -60,10 +60,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             for (name, identifier) in browserList {
                 let menuItem = NSMenuItem(title: name, action: #selector(changeDefaultBrowser(_:)), keyEquivalent: "")
                 menuItem.representedObject = identifier // Store the bundle identifier
+                let icon = NSWorkspace.shared.icon(forFile: identifier.path)
+                icon.size = NSSize(width: 16, height: 16)
+                menuItem.image = icon;
+                menu.addItem(menuItem)
+                
                 if identifier == currentDefaultBrowser {
                     menuItem.state = .on // Add a checkmark
+                    
+                    // this needs to happen on the main thread
+                    DispatchQueue.main.async {
+                        // Set the icon (optional)
+                        if let button = self.statusItem.button {
+                            button.image = icon
+                        }
+                    }
                 }
-                menu.addItem(menuItem)
             }
             
         }
