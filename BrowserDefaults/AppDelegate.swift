@@ -54,28 +54,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             // Sort the browser list alphabetically by name
             let browserList = browserIdentifiers.map{ (formatBrowserName(browser: $0), $0)}
+                .filter { $0.1 != currentDefaultBrowser}
                 .sorted { $0.0 < $1.0 }
+            
+            if let identifier = currentDefaultBrowser {
+                let name = formatBrowserName(browser: identifier)
+                let menuItem = NSMenuItem(title: name, action: nil, keyEquivalent: "")
+                menuItem.representedObject = identifier // Store the bundle identifier
+                let icon = NSWorkspace.shared.icon(forFile: identifier.path)
+                icon.size = NSSize(width: 16, height: 16)
+                menuItem.image = icon;
+                menu.addItem(menuItem)
+                menuItem.state = .on
+                // this needs to happen on the main thread
+                DispatchQueue.main.async {
+                    // Set the icon (optional)
+                    if let button = self.statusItem.button {
+                        button.image = icon
+                    }
+                }
+            }
+            
+            menu.addItem(NSMenuItem.separator())
             
             // Add the sorted browsers to the menu
             for (name, identifier) in browserList {
+                if identifier == currentDefaultBrowser {
+                    continue;
+                }
+                
                 let menuItem = NSMenuItem(title: name, action: #selector(changeDefaultBrowser(_:)), keyEquivalent: "")
                 menuItem.representedObject = identifier // Store the bundle identifier
                 let icon = NSWorkspace.shared.icon(forFile: identifier.path)
                 icon.size = NSSize(width: 16, height: 16)
                 menuItem.image = icon;
                 menu.addItem(menuItem)
-                
-                if identifier == currentDefaultBrowser {
-                    menuItem.state = .on // Add a checkmark
-                    
-                    // this needs to happen on the main thread
-                    DispatchQueue.main.async {
-                        // Set the icon (optional)
-                        if let button = self.statusItem.button {
-                            button.image = icon
-                        }
-                    }
-                }
             }
             
         }
