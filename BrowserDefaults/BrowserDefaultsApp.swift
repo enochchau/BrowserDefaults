@@ -13,19 +13,13 @@ struct BrowserDefaultsApp: App {
     
     var body: some Scene {
         MenuBarExtra {
-            ForEach(browserManager.browsers, id: \.name) { browser in
-                Button {
-                    browserManager.setDefaultBrowser(browserUrl: browser.url)
-                } label: {
-                    if browser.name == browserManager.selectedBrowser?.name {
-                        Image(systemName: "checkmark")
-                            .frame(width: 16) // Give it a fixed width
-                        
-                    }
-                    Image(nsImage: browser.icon)
-                    Text(browser.name)
+            List {
+                ForEach(browserManager.browsers, id: \.name) { browser in
+                    BrowserListItem(iconPath: browser.url.path, label: browser.name, checked: browserManager.selectedBrowser?.name == browser.name, onClick: {
+                        browserManager.setDefaultBrowser(browserUrl: browser.url)
+                    })
                 }
-            }
+            }.frame(minHeight: 200)
             Divider()
             Button("Quit") {
                 NSApplication.shared.terminate(nil)
@@ -38,6 +32,7 @@ struct BrowserDefaultsApp: App {
                 Image(systemName: "globe")
             }
         }
+        .menuBarExtraStyle(.window)
     }
 }
 
@@ -52,6 +47,7 @@ class BrowserManager: ObservableObject {
         let icon: NSImage
         
         init(url: URL) {
+            print(url.path)
             self.url = url
             self.icon = NSWorkspace.shared.icon(forFile: url.path)
             self.icon.size = NSSize(width: 16, height: 16)
