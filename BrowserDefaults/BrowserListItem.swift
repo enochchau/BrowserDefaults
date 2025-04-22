@@ -12,6 +12,7 @@ struct BrowserListItem: View {
     let label: String
     let checked: Bool
     let onClick: (() -> Void)?
+    @State private var isHovering = false
     
     var body: some View {
         Button(action: {
@@ -28,7 +29,16 @@ struct BrowserListItem: View {
                 Image(nsImage: iconFromIconPath())
                 Text(self.label)
             }
+            .frame(maxWidth: .infinity,alignment: .leading)
+            .padding(6)
+            .background(
+                !checked && isHovering ? Color.secondary.opacity(0.2) : Color.clear)
+            .cornerRadius(4)
+
         }.buttonStyle(PlainButtonStyle())
+            .onHover { hovering in
+                isHovering = hovering
+            }
     }
     
     func iconFromIconPath() -> NSImage {
