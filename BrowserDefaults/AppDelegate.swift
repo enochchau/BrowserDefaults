@@ -83,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     continue;
                 }
                 
-                let menuItem = NSMenuItem(title: name, action: #selector(changeDefaultBrowser(_:)), keyEquivalent: "")
+                let menuItem = NSMenuItem(title: name, action: #selector(changeDefaultBrowser(_:)), keyEquivalent: getHotKey(name: name))
                 menuItem.representedObject = identifier // Store the bundle identifier
                 let icon = NSWorkspace.shared.icon(forFile: identifier.path)
                 icon.size = NSSize(width: 16, height: 16)
@@ -97,6 +97,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         
         statusItem.menu = menu
+    }
+    
+    func getHotKey(name: String) -> String  {
+        if name == "Google Chrome" {
+            return "c"
+        }
+        if name == "Safari" {
+            return "s"
+        }
+        if name == "Firefox" {
+            return "f"
+        }
+        return ""
     }
     
     func formatBrowserName(browser: URL) -> String {
